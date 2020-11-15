@@ -8,7 +8,6 @@ const validate = async ({ projectId, memberId }) => {
     const schema = Joi.object({
       projectId: Joi.number().min(1).required(),
       memberId: Joi.number().min(1).required(),
-
     });
     return await schema.validate({ projectId, memberId });
   } catch (error) {

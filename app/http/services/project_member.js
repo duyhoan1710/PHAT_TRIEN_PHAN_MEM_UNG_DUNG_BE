@@ -32,7 +32,12 @@ exports.getListProject = async ({
       member_id: userId,
       'projects.isDelete': false,
     })
-    .select('projects.id', 'projects.name', 'projects.description', 'projects.created_at')
+    .select(
+      'projects.id',
+      'projects.name',
+      'projects.description',
+      'projects.created_at',
+    )
     .offset(offset)
     .limit(limit);
 
