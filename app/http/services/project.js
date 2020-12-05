@@ -52,18 +52,37 @@ exports.getList = async ({
   userId,
   limit,
   offset,
+  sortBy,
+  sortType,
 }) => {
   const projects = await Project.query()
+    .join('projects_members', 'projects.id', 'projects_members.project_id')
+    .where({
+      'projects_members.member_id': userId,
+    })
     .where({
       created_by: userId,
       isDelete: false,
     })
-    .select('id', 'name', 'description', 'created_at')
+    .select('projects.id', 'projects.name', 'projects.description', 'projects.created_at')
     .offset(offset)
     .limit(limit)
-    .orderBy('id', 'DESC');
+    .orderBy(sortBy, sortType);
 
-  return { projects };
+  const [{ 'count(`id`)': total }] = await Project.query()
+    .join('projects_members', 'projects.id', 'projects_members.project_id')
+    .where({
+      'projects_members.member_id': userId,
+    })
+    .where({
+      created_by: userId,
+      isDelete: false,
+    })
+    .count('id');
+
+  return {
+    projects, total, limit, offset,
+  };
 };
 
 exports.remove = async ({ userId, projectId }) => {

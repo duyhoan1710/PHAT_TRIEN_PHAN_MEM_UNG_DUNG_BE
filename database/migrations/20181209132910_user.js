@@ -4,6 +4,10 @@ exports.up = async (knex) => {
     table.string('email', 127).collate('latin1_general_ci');
     table.string('password', 127).collate('latin1_general_ci');
     table.string('full_name', 127).collate('utf8_general_ci');
+    table.text('avatar').collate('latin1_general_ci');
+    table.string('address', 127).collate('utf8_general_ci');
+    table.string('phone', 127).collate('latin1_general_ci');
+    table.datetime('birthday');
 
     table.timestamps(true, true);
 

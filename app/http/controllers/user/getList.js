@@ -1,20 +1,25 @@
 const Joi = require('joi');
 
-const projectService = require('../../services/project');
+const userService = require('../../services/user');
 const { abort } = require('../../../helpers/error');
 
 const validate = async ({
-  limit, offset, sortType, sortBy,
+  limit, offset, sortBy, sortType, keySearch,
 }) => {
   try {
     const schema = Joi.object({
       limit: Joi.number().min(1).required(),
       offset: Joi.number().min(0).required(),
-      sortBy: Joi.valid(['id', 'name', 'created_by', 'created_at']).required(),
-      sortType: Joi.valid(['asc', 'desc']).required(),
+      sortBy: Joi.string().valid([
+        'id', 'full_name', 'email',
+      ]).required(),
+      sortType: Joi.string().valid([
+        'asc', 'desc',
+      ]).required(),
+      keySearch: Joi.string().allow(''),
     });
     return await schema.validate({
-      limit, offset, sortType, sortBy,
+      limit, offset, sortBy, sortType, keySearch,
     });
   } catch (error) {
     return abort(400, 'Params Error');
@@ -23,18 +28,17 @@ const validate = async ({
 
 const getList = async (req, res) => {
   const {
-    limit, offset, sortBy, sortType,
+    sortBy, sortType, limit, offset, keySearch,
   } = req.query;
-  const userId = req.user.id;
   await validate({
-    limit, offset, sortBy, sortType,
+    sortBy, sortType, limit, offset, keySearch,
   });
-  const tasks = await projectService.getList({
-    userId,
+  const tasks = await userService.getList({
     limit,
     offset,
     sortBy,
     sortType,
+    keySearch,
   });
   res.status(200).send(tasks);
 };

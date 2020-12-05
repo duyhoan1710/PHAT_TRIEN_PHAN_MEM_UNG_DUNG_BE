@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
-const { generate } = require('../../helpers/jwt');
+const gravatar = require('gravatar');
 
+const { generate } = require('../../helpers/jwt');
 const { User } = require('../../models');
 const { abort } = require('../../helpers/error');
 
@@ -25,5 +26,6 @@ exports.signUp = async ({
       email,
       password: hashPassword,
       full_name: fullName,
+      avatar: gravatar.url('hoanduy1710@gmail.com', { s: '300', r: 'x', d: 'retro' }, true),
     });
 };

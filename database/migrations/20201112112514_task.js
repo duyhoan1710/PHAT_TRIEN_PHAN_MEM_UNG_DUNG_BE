@@ -5,7 +5,12 @@ exports.up = async (knex) => {
     table.string('description', 127).collate('utf8_general_ci');
     table.tinyint('status');
     table.tinyint('priority');
+    table.tinyint('distribute');
+
     table.integer('project_id').unsigned().references('projects.id');
+    table.integer('assignId').unsigned().references('users.id');
+    table.integer('created_by').unsigned().references('users.id');
+    table.integer('updated_by').unsigned().references('users.id');
 
     table.timestamps(true, true);
   });

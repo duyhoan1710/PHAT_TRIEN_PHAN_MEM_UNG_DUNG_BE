@@ -6,7 +6,7 @@ const taskStatus = require('../../../enums/taskStatus');
 const taskPriority = require('../../../enums/taskPriority');
 
 const validate = async ({
-  name, description, status, priority, projectId, taskId,
+  name, description, status, priority, projectId, taskId, assignId,
 }) => {
   try {
     const schema = Joi.object({
@@ -22,9 +22,10 @@ const validate = async ({
         ),
       projectId: Joi.number().min(1).required(),
       taskId: Joi.number().min(1).required(),
+      assignId: Joi.number().allow(null),
     });
     return await schema.validate({
-      name, description, status, priority, projectId, taskId,
+      name, description, status, priority, projectId, taskId, assignId,
     });
   } catch (error) {
     return abort(400, 'Params Error');
@@ -33,13 +34,13 @@ const validate = async ({
 
 const update = async (req, res) => {
   const {
-    name, description, status, priority,
+    name, description, status, priority, assignId,
   } = req.body;
   const { projectId, taskId } = req.params;
   const userId = req.user.id;
 
   await validate({
-    name, description, status, priority, projectId, taskId,
+    name, description, status, priority, projectId, taskId, assignId,
   });
   await taskService.update({
     taskId,
@@ -49,6 +50,7 @@ const update = async (req, res) => {
     description,
     status,
     priority,
+    assignId,
   });
   res.status(204).send();
 };

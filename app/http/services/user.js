@@ -1,16 +1,35 @@
-const bcrypt = require('bcrypt');
-
 const { User } = require('../../models');
 
-exports.update = async ({ userId, fullName, password }) => {
-  let hashPassword;
-  const params = { full_name: fullName };
-  if (password) {
-    const salt = parseInt(process.env.SALT_ROUNDS, 10);
-    hashPassword = await bcrypt.hash(password, salt);
-    params.password = hashPassword;
-  }
+exports.update = async ({
+  userId, fullName, phone, birthday, address,
+}) => {
   await User.query()
     .findById(userId)
-    .update(params);
+    .update({
+      full_name: fullName,
+      phone,
+      birthday: birthday || null,
+      address,
+    });
+};
+
+exports.getList = async ({
+  limit, offset, sortBy, sortType, keySearch,
+}) => {
+  const users = await User.query()
+    .where('email', 'LIKE', `%${keySearch}%`)
+    .select('id', 'email', 'full_name', 'avatar')
+    .offset(offset)
+    .limit(limit)
+    .orderBy(sortBy, sortType);
+
+  const [{ 'count(`id`)': total }] = await User.query()
+    .count('id');
+
+  return {
+    users,
+    total,
+    limit,
+    offset,
+  };
 };
